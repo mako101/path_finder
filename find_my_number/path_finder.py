@@ -23,6 +23,7 @@ class PathFinder:
         self.possible_moves = None
         self.valid_moves = None
         self.move_sequence = None
+        self.keypress_sequence = None
         self.vowel_list = vowel_list
         if not vowel_list:
             self.vowel_list = 'AEIOUY'
@@ -142,13 +143,12 @@ class PathFinder:
         return key in self.vowel_list
 
     def get_valid_moves(self):
-        """Filter out moves with more than 2 vowels or those including missing keys"""
-        # TODO refactor
+        """Filter out moves including missing keys"""
+        # TODO optimize and remove - just check for blanks?
         self.valid_moves = list()
         for move in self.possible_moves:
             move_sequence = [self.keypad[x][y] for x, y in move]
-            vowel_count = sum(map(lambda x: self.is_vowel(x), move_sequence))
-            if (vowel_count > 2) or (' ' in move_sequence):
+            if ' ' in move_sequence:
                 continue
             self.valid_moves.append(move_sequence)
 
@@ -179,14 +179,21 @@ class PathFinder:
                 next_key = self.move_sequence[-1][-1]
                 self.get_next_move_set(next_key)
                 # filter out the moves already in the sequence
+                # this is to avoid the code looping over the same characters infinitely
                 self.valid_moves = list(filter(lambda i: i not in self.move_sequence, self.valid_moves))
+                # TODO ADD check for going back to the same character
                 self.move_sequence.append(random.choice(self.valid_moves))
+                self.keypress_sequence = [move[0] for move in self.move_sequence]
+                # check the vowel count and abort if it is more than 2
+                vowel_count = sum(map(lambda x: self.is_vowel(x), self.keypress_sequence))
+                if vowel_count > 2:
+                    raise ValueError()
+
 
         else:
             # TODO FIX THE OUTPUT
             print(self.move_sequence)
-            final_output = [move[0] for move in self.move_sequence]
-            return final_output
+            return self.keypress_sequence
 
     def start(self, start_key=None):
         """
@@ -205,5 +212,5 @@ class PathFinder:
             try:
                 result = self.get_move_sequence()
                 print(result)
-            except IndexError:
+            except (IndexError, ValueError):
                 pass
