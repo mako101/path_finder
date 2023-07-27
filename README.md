@@ -2,25 +2,27 @@
 
 
 ## Description
-The provide solution is designed to provide a sequence of 10 knight moves (by default), given a keypad and the starting key press
+The provided solution is designed to calculate a sequence of 10 successive knight moves (by default), given a keypad and a starting key press
 
-The solution treats keyboard as a grid and calculates possible moves within the constraints of the grid
+The solution treats the keypad as a grid and calculates possible moves based on key positions within the constraints of the grid
 
 Therefore, it should work not only with the keypad from the assignment, but with the keypad of any size or layout
 
-(assuming it has enough keys to generate 10 knight moves)
+(assuming it has a sufficient amount of keys and rows to support knight moves)
+
+You may also instruct the code to generate more or less than 10 subsequent moves if you wish
 
 ## Installation
 
 No installation is required, the code is written using Python3 standard library modules and objects
 
-It should work as long as it is run Python3.9+ environment
+It should work as long as it is run in a Python3.9+ environment
 
 ## Execution
 
 Please run `main.py` to execute the solution against all the keys of the assignment keypad
 
-If you wish to execute it differently, please use the following code
+If you wish to execute it differently, please see the example below:
 
 ```python
 from path_finder import PathFinder
