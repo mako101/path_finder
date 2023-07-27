@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 
 class PathFinder:
@@ -14,7 +15,9 @@ class PathFinder:
       (such as those in the last row of the sample keypad, which only has 3 actual keys)
     """
 
-    def __init__(self, keypad: tuple, vowel_list: str = None):
+    def __init__(self, keypad: tuple,
+                 sequence_size: Optional[int] = None,
+                 vowel_list: Optional[str] = None):
         self.keypad = keypad
         self.keypad_layout = None
         self.start_key = None
@@ -24,6 +27,9 @@ class PathFinder:
         self.valid_moves = None
         self.move_sequence = None
         self.keypress_sequence = None
+        self.sequence_size = sequence_size
+        if not self.sequence_size:
+            self.sequence_size = 10
         self.vowel_list = vowel_list
         if not vowel_list:
             self.vowel_list = 'AEIOUY'
@@ -167,9 +173,9 @@ class PathFinder:
         self.start_key = input(user_message)
 
     def get_move_sequence(self):
-        """Get 10 moves based on and initial key"""
+        """Get 10 moves based on and initial key press"""
         self.move_sequence = list()
-        while len(self.move_sequence) < 10:
+        while len(self.move_sequence) < self.sequence_size:
             if not self.move_sequence:
                 # get a random valid move
                 self.get_next_move_set(self.start_key)
@@ -181,18 +187,14 @@ class PathFinder:
                 # filter out the moves already in the sequence
                 # this is to avoid the code looping over the same characters infinitely
                 self.valid_moves = list(filter(lambda i: i not in self.move_sequence, self.valid_moves))
-                # TODO ADD check for going back to the same character
                 self.move_sequence.append(random.choice(self.valid_moves))
                 self.keypress_sequence = [move[0] for move in self.move_sequence]
-                # check the vowel count and abort if it is more than 2
+                # check the vowel count in the key press sequence and abort if it is more than 2
                 vowel_count = sum(map(lambda x: self.is_vowel(x), self.keypress_sequence))
                 if vowel_count > 2:
                     raise ValueError()
 
-
         else:
-            # TODO FIX THE OUTPUT
-            print(self.move_sequence)
             return self.keypress_sequence
 
     def start(self, start_key=None):
@@ -208,9 +210,14 @@ class PathFinder:
         else:
             self.get_start_key()
         result = None
+        attempts = 0
         while not result:
             try:
                 result = self.get_move_sequence()
                 print(result)
             except (IndexError, ValueError):
-                pass
+                attempts += 1
+                # abort if unable to find a solution after 10 attempts
+                if attempts >= 10:
+                    raise Exception(f'Unable to calculate move sequence for key '
+                                    f'{self.start_key} after {attempts} attempts, giving up')
