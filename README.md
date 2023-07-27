@@ -22,6 +22,10 @@ It should work as long as it is run in a Python3.9+ environment
 
 Please run `main.py` to execute the solution against all the keys of the assignment keypad
 
+```bash
+python3 main.py
+```
+
 If you wish to execute it differently, please see the example below:
 
 ```python
